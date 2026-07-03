@@ -1,0 +1,41 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyTorch checkpoints
+*.pt
+*.pth
+models/*
+!models/.gitkeep
+
+# Dataset (Optional: exclude large data files, but keep directory structure)
+# dataset/*
+# !dataset/train
+# !dataset/val
+# !dataset/test
+
+# Results and logs
+results/*
+!results/.gitkeep
+*.log
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# Miscellaneous
+.ipynb_checkpoints/
+temp/
+downloads/
+temp_downloads/

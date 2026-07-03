@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset Slideshow for Screen Recapture Capture</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0b0f19;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #f3f4f6;
+        }
+        #slideshow-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .slide.active {
+            opacity: 1;
+        }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 2px solid #1f2937;
+        }
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(17, 24, 39, 0.85);
+            padding: 12px 24px;
+            border-radius: 9999px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+        button {
+            background: none;
+            border: none;
+            color: #f3f4f6;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #3b82f6;
+        }
+        #counter {
+            font-size: 14px;
+            color: #9ca3af;
+            font-family: monospace;
+        }
+        #fullscreen-hint {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(17, 24, 39, 0.7);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #9ca3af;
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div id="fullscreen-hint">Press F11 for Fullscreen | Space to Pause/Resume</div>
+    <div id="slideshow-container"></div>
+    
+    <div id="controls">
+        <button id="prev-btn">◀ Prev</button>
+        <button id="play-btn">Pause</button>
+        <button id="next-btn">Next ▶</button>
+        <span id="counter">0 / 0</span>
+    </div>
+
+    <script>
+        // List of images downloaded from Picsum
+        const images = ["dataset/real/real_0.jpg", "dataset/real/real_1.jpg", "dataset/real/real_2.jpg", "dataset/real/real_3.jpg", "dataset/real/real_4.jpg", "dataset/real/real_5.jpg", "dataset/real/real_6.jpg", "dataset/real/real_7.jpg", "dataset/real/real_8.jpg", "dataset/real/real_9.jpg", "dataset/real/real_10.jpg", "dataset/real/real_11.jpg", "dataset/real/real_12.jpg", "dataset/real/real_13.jpg", "dataset/real/real_14.jpg", "dataset/real/real_15.jpg", "dataset/real/real_16.jpg", "dataset/real/real_17.jpg", "dataset/real/real_18.jpg", "dataset/real/real_19.jpg", "dataset/real/real_20.jpg", "dataset/real/real_21.jpg", "dataset/real/real_22.jpg", "dataset/real/real_23.jpg", "dataset/real/real_24.jpg", "dataset/real/real_25.jpg", "dataset/real/real_26.jpg", "dataset/real/real_27.jpg", "dataset/real/real_28.jpg", "dataset/real/real_29.jpg", "dataset/real/real_30.jpg", "dataset/real/real_31.jpg", "dataset/real/real_32.jpg", "dataset/real/real_33.jpg", "dataset/real/real_34.jpg", "dataset/real/real_35.jpg", "dataset/real/real_36.jpg", "dataset/real/real_37.jpg", "dataset/real/real_38.jpg", "dataset/real/real_39.jpg", "dataset/real/real_40.jpg", "dataset/real/real_41.jpg", "dataset/real/real_42.jpg", "dataset/real/real_43.jpg", "dataset/real/real_44.jpg", "dataset/real/real_45.jpg", "dataset/real/real_46.jpg", "dataset/real/real_47.jpg", "dataset/real/real_48.jpg", "dataset/real/real_49.jpg", "dataset/real/real_50.jpg", "dataset/real/real_51.jpg", "dataset/real/real_52.jpg", "dataset/real/real_53.jpg", "dataset/real/real_54.jpg", "dataset/real/real_55.jpg", "dataset/real/real_56.jpg", "dataset/real/real_57.jpg", "dataset/real/real_58.jpg", "dataset/real/real_59.jpg", "dataset/real/real_60.jpg", "dataset/real/real_61.jpg", "dataset/real/real_62.jpg", "dataset/real/real_63.jpg", "dataset/real/real_64.jpg", "dataset/real/real_65.jpg", "dataset/real/real_66.jpg", "dataset/real/real_67.jpg", "dataset/real/real_68.jpg", "dataset/real/real_69.jpg", "dataset/real/real_70.jpg", "dataset/real/real_71.jpg", "dataset/real/real_72.jpg", "dataset/real/real_73.jpg", "dataset/real/real_74.jpg", "dataset/real/real_75.jpg", "dataset/real/real_76.jpg", "dataset/real/real_77.jpg", "dataset/real/real_78.jpg", "dataset/real/real_79.jpg", "dataset/real/real_80.jpg", "dataset/real/real_81.jpg", "dataset/real/real_82.jpg", "dataset/real/real_83.jpg", "dataset/real/real_84.jpg", "dataset/real/real_85.jpg", "dataset/real/real_87.jpg", "dataset/real/real_88.jpg", "dataset/real/real_89.jpg", "dataset/real/real_90.jpg", "dataset/real/real_91.jpg", "dataset/real/real_92.jpg", "dataset/real/real_93.jpg", "dataset/real/real_94.jpg", "dataset/real/real_95.jpg", "dataset/real/real_96.jpg", "dataset/real/real_98.jpg", "dataset/real/real_99.jpg", "dataset/real/real_100.jpg", "dataset/real/real_101.jpg", "dataset/real/real_102.jpg", "dataset/real/real_103.jpg", "dataset/real/real_104.jpg", "dataset/real/real_106.jpg", "dataset/real/real_107.jpg", "dataset/real/real_108.jpg", "dataset/real/real_109.jpg", "dataset/real/real_110.jpg", "dataset/real/real_111.jpg", "dataset/real/real_112.jpg", "dataset/real/real_113.jpg", "dataset/real/real_114.jpg", "dataset/real/real_115.jpg", "dataset/real/real_116.jpg", "dataset/real/real_117.jpg", "dataset/real/real_118.jpg", "dataset/real/real_119.jpg", "dataset/real/real_120.jpg", "dataset/real/real_121.jpg", "dataset/real/real_122.jpg", "dataset/real/real_123.jpg", "dataset/real/real_124.jpg", "dataset/real/real_125.jpg", "dataset/real/real_126.jpg", "dataset/real/real_127.jpg", "dataset/real/real_128.jpg", "dataset/real/real_129.jpg", "dataset/real/real_130.jpg", "dataset/real/real_131.jpg", "dataset/real/real_132.jpg", "dataset/real/real_133.jpg", "dataset/real/real_134.jpg", "dataset/real/real_135.jpg", "dataset/real/real_136.jpg", "dataset/real/real_137.jpg", "dataset/real/real_139.jpg", "dataset/real/real_140.jpg", "dataset/real/real_141.jpg", "dataset/real/real_142.jpg", "dataset/real/real_143.jpg", "dataset/real/real_144.jpg", "dataset/real/real_145.jpg", "dataset/real/real_146.jpg", "dataset/real/real_147.jpg", "dataset/real/real_149.jpg", "dataset/real/real_151.jpg", "dataset/real/real_152.jpg", "dataset/real/real_153.jpg", "dataset/real/real_154.jpg", "dataset/real/real_155.jpg", "dataset/real/real_156.jpg", "dataset/real/real_157.jpg", "dataset/real/real_158.jpg", "dataset/real/real_159.jpg", "dataset/real/real_160.jpg", "dataset/real/real_161.jpg", "dataset/real/real_162.jpg", "dataset/real/real_163.jpg", "dataset/real/real_164.jpg", "dataset/real/real_165.jpg", "dataset/real/real_166.jpg", "dataset/real/real_167.jpg", "dataset/real/real_168.jpg", "dataset/real/real_169.jpg", "dataset/real/real_170.jpg", "dataset/real/real_171.jpg", "dataset/real/real_172.jpg", "dataset/real/real_173.jpg", "dataset/real/real_174.jpg", "dataset/real/real_175.jpg", "dataset/real/real_176.jpg", "dataset/real/real_177.jpg", "dataset/real/real_178.jpg", "dataset/real/real_179.jpg", "dataset/real/real_180.jpg", "dataset/real/real_181.jpg", "dataset/real/real_182.jpg", "dataset/real/real_183.jpg", "dataset/real/real_184.jpg", "dataset/real/real_185.jpg", "dataset/real/real_186.jpg", "dataset/real/real_187.jpg", "dataset/real/real_188.jpg", "dataset/real/real_189.jpg", "dataset/real/real_190.jpg", "dataset/real/real_191.jpg", "dataset/real/real_192.jpg", "dataset/real/real_193.jpg", "dataset/real/real_194.jpg", "dataset/real/real_195.jpg", "dataset/real/real_196.jpg", "dataset/real/real_197.jpg", "dataset/real/real_198.jpg", "dataset/real/real_199.jpg", "dataset/real/real_200.jpg", "dataset/real/real_201.jpg", "dataset/real/real_202.jpg", "dataset/real/real_203.jpg", "dataset/real/real_204.jpg", "dataset/real/real_206.jpg"];
+        
+        let currentIndex = 0;
+        let isPlaying = true;
+        let slideInterval = null;
+        const cycleTime = 3000; // 3 seconds per image
+        
+        const container = document.getElementById("slideshow-container");
+        const counterEl = document.getElementById("counter");
+        const playBtn = document.getElementById("play-btn");
+        const nextBtn = document.getElementById("next-btn");
+        const prevBtn = document.getElementById("prev-btn");
+        
+        // Initialize slides
+        function init() {
+            if (images.length === 0) {
+                container.innerHTML = "<div class='slide active'><h2>No images found. Run download_real_dataset.py first.</h2></div>";
+                counterEl.innerText = "0 / 0";
+                return;
+            }
+            
+            images.forEach((src, index) => {
+                const slide = document.createElement("div");
+                slide.className = "slide" + (index === 0 ? " active" : "");
+                const img = document.createElement("img");
+                img.src = src;
+                img.alt = `Slide ${index + 1}`;
+                slide.appendChild(img);
+                container.appendChild(slide);
+            });
+            
+            updateUI();
+            startInterval();
+        }
+        
+        function showSlide(index) {
+            const slides = document.querySelectorAll(".slide");
+            if (slides.length === 0) return;
+            
+            slides[currentIndex].classList.remove("active");
+            
+            // Wrap index around
+            currentIndex = (index + slides.length) % slides.length;
+            
+            slides[currentIndex].classList.add("active");
+            updateUI();
+        }
+        
+        function updateUI() {
+            counterEl.innerText = `${currentIndex + 1} / ${images.length}`;
+        }
+        
+        function startInterval() {
+            stopInterval();
+            slideInterval = setInterval(() => {
+                showSlide(currentIndex + 1);
+            }, cycleTime);
+        }
+        
+        function stopInterval() {
+            if (slideInterval) {
+                clearInterval(slideInterval);
+                slideInterval = null;
+            }
+        }
+        
+        function togglePlay() {
+            if (isPlaying) {
+                stopInterval();
+                playBtn.innerText = "Play";
+                isPlaying = false;
+            } else {
+                startInterval();
+                playBtn.innerText = "Pause";
+                isPlaying = true;
+            }
+        }
+        
+        // Event Listeners
+        playBtn.addEventListener("click", togglePlay);
+        nextBtn.addEventListener("click", () => {
+            showSlide(currentIndex + 1);
+            if (isPlaying) startInterval(); // Reset timer
+        });
+        prevBtn.addEventListener("click", () => {
+            showSlide(currentIndex - 1);
+            if (isPlaying) startInterval(); // Reset timer
+        });
+        
+        document.addEventListener("keydown", (e) => {
+            if (e.code === "Space") {
+                e.preventDefault();
+                togglePlay();
+            } else if (e.code === "ArrowRight") {
+                showSlide(currentIndex + 1);
+                if (isPlaying) startInterval();
+            } else if (e.code === "ArrowLeft") {
+                showSlide(currentIndex - 1);
+                if (isPlaying) startInterval();
+            }
+        });
+        
+        init();
+    </script>
+</body>
+</html>
