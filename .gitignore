@@ -12,11 +12,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# PyTorch checkpoints
+# PyTorch/Tensorflow checkpoints
 *.pt
 *.pth
 models/*
 !models/.gitkeep
+!models/best_model.keras
+!models/calibrator.pkl
+
 
 # Dataset (Optional: exclude large data files, but keep directory structure)
 # dataset/*
