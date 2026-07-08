@@ -28,7 +28,7 @@ Assuming an AWS Lambda deployment (x86, 1024MB RAM at ~$0.0000166 per second), t
 
 ## Future Improvements
 - Implement a tiny object detector (e.g., YOLOv8-nano) to rigidly crop out screen bezels before running the classification network.
-- Expand the dataset to 10,000+ images sourced from diverse hardware: OLED screens, CRT monitors, e-ink displays, and varying smartphone camera lenses.
+- Expand the dataset to 1sc,000+ images sourced from diverse hardware: OLED screens, CRT monitors, e-ink displays, and varying smartphone camera lenses.
 
 ## Installation
 ```bash
